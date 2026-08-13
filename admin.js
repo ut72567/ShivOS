@@ -1,25 +1,21 @@
-// Import Firebase modules via CDN for native browser support
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-import { getFirestore, doc, getDoc, collection, query, orderBy, limit, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics.js";
+import { 
+    getFirestore, doc, getDoc, collection, addDoc, query, orderBy, limit, getDocs, serverTimestamp 
+} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-// ShivOS Production Firebase Configuration
 const firebaseConfig = {
   apiKey: "AIzaSyDzYZjKIFqvymAunjNaSg_H3ugi0FqxG4E",
   authDomain: "shivos.firebaseapp.com",
   projectId: "shivos",
   storageBucket: "shivos.firebasestorage.app",
   messagingSenderId: "323460412245",
-  appId: "1:323460412245:web:290dee1b94d8441d3b35dc",
-  measurementId: "G-TTF55F03W2"
+  appId: "1:323460412245:web:290dee1b94d8441d3b35dc"
 };
 
-// Initialize Firebase Ecosystem
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
-const analytics = getAnalytics(app);
 
 class AdminController {
     constructor() {
@@ -27,83 +23,110 @@ class AdminController {
         this.initUI();
     }
 
-    /**
-     * Route Protection & Role-Based Access Control
-     * Verifies authentication and checks Firestore for 'Admin' or 'Super Admin' role.
-     */
     protectRoute() {
         onAuthStateChanged(auth, async (user) => {
             if (!user) {
-                // Not logged in -> Kick to login
                 window.location.replace('/login.html');
                 return;
             }
-
             try {
-                // Fetch user role from Firestore
                 const roleDocRef = doc(db, 'roles', user.uid);
                 const roleSnapshot = await getDoc(roleDocRef);
 
-                if (roleSnapshot.exists()) {
-                    const userData = roleSnapshot.data();
-                    if (userData.role === 'Admin' || userData.role === 'Super Admin') {
-                        // Access Granted: Load Dashboard Data
-                        this.loadRecentReleases();
-                    } else {
-                        // Unauthorized user -> Kick to public portal
-                        alert("Access Denied: Insufficient permissions.");
-                        window.location.replace('/dashboard.html');
-                    }
+                if (roleSnapshot.exists() && (roleSnapshot.data().role === 'Admin' || roleSnapshot.data().role === 'Super Admin')) {
+                    this.loadRecentReleases();
                 } else {
-                    // No role document exists
+                    alert("Access Denied: Insufficient permissions.");
                     window.location.replace('/dashboard.html');
                 }
             } catch (error) {
-                console.error("RBAC Verification Failed:", error);
-                // Fail secure
                 window.location.replace('/login.html');
             }
         });
     }
 
-    /**
-     * UI Interactions & Event Listeners
-     */
     initUI() {
-        // Mobile Sidebar Toggle
-        const menuToggle = document.getElementById('menu-toggle');
-        const sidebar = document.getElementById('sidebar');
+        document.getElementById('menu-toggle')?.addEventListener('click', () => {
+            document.getElementById('sidebar').classList.toggle('open');
+        });
 
-        if (menuToggle && sidebar) {
-            menuToggle.addEventListener('click', () => {
-                sidebar.classList.toggle('open');
-            });
-        }
+        document.getElementById('btn-logout')?.addEventListener('click', () => {
+            signOut(auth).then(() => window.location.replace('/login.html'));
+        });
 
-        // Logout Handler
-        const logoutBtn = document.getElementById('btn-logout');
-        if (logoutBtn) {
-            logoutBtn.addEventListener('click', () => {
-                signOut(auth).then(() => {
-                    window.location.replace('/login.html');
-                }).catch((error) => {
-                    console.error("Logout error", error);
-                });
+        // Form Submit Listeners
+        document.getElementById('form-add-device')?.addEventListener('submit', (e) => this.handleDeviceSubmit(e));
+        document.getElementById('form-add-release')?.addEventListener('submit', (e) => this.handleReleaseSubmit(e));
+    }
+
+    async handleDeviceSubmit(e) {
+        e.preventDefault();
+        const btn = document.getElementById('btn-submit-device');
+        btn.innerText = 'Saving...';
+        btn.disabled = true;
+
+        try {
+            await addDoc(collection(db, 'devices'), {
+                deviceName: document.getElementById('dev-name').value.trim(),
+                codename: document.getElementById('dev-codename').value.trim().toLowerCase(),
+                maintainer: document.getElementById('dev-maintainer').value.trim(),
+                status: document.getElementById('dev-status').value,
+                addedAt: serverTimestamp()
             });
+
+            alert("Device successfully added to tree.");
+            document.getElementById('form-add-device').reset();
+            window.closeModal('deviceModal');
+        } catch (error) {
+            console.error("Error adding device:", error);
+            alert("Failed to add device. Check console for details.");
+        } finally {
+            btn.innerText = 'Save Device';
+            btn.disabled = false;
         }
     }
 
-    /**
-     * Fetch Recent OTA Releases for the Dashboard Table
-     */
+    async handleReleaseSubmit(e) {
+        e.preventDefault();
+        const btn = document.getElementById('btn-submit-release');
+        btn.innerText = 'Publishing...';
+        btn.disabled = true;
+
+        try {
+            await addDoc(collection(db, 'releases'), {
+                codename: document.getElementById('rel-codename').value.trim().toLowerCase(),
+                version: document.getElementById('rel-version').value.trim(),
+                androidBase: document.getElementById('rel-base').value.trim(),
+                channel: document.getElementById('rel-channel').value,
+                downloadUrl: document.getElementById('rel-url').value.trim(),
+                fileSize: parseFloat(document.getElementById('rel-size').value),
+                sha256: document.getElementById('rel-sha').value.trim(),
+                releaseNotes: document.getElementById('rel-notes').value.trim(),
+                releaseDate: new Date().toISOString(),
+                createdAt: serverTimestamp()
+            });
+
+            alert("OTA Release published globally.");
+            document.getElementById('form-add-release').reset();
+            window.closeModal('releaseModal');
+            
+            // Refresh Dashboard table to show new release
+            this.loadRecentReleases();
+        } catch (error) {
+            console.error("Error pushing release:", error);
+            alert("Failed to push release. Check console for details.");
+        } finally {
+            btn.innerText = 'Publish Release';
+            btn.disabled = false;
+        }
+    }
+
     async loadRecentReleases() {
         const tableBody = document.getElementById('recent-releases-body');
         if (!tableBody) return;
 
         try {
-            const releasesRef = collection(db, 'releases');
-            // Fetch the 5 most recent releases
-            const q = query(releasesRef, orderBy('releaseDate', 'desc'), limit(5));
+            const q = query(collection(db, 'releases'), orderBy('createdAt', 'desc'), limit(5));
             const querySnapshot = await getDocs(q);
 
             if (querySnapshot.empty) {
@@ -111,39 +134,35 @@ class AdminController {
                 return;
             }
 
-            tableBody.innerHTML = ''; // Clear loading state
+            tableBody.innerHTML = ''; 
 
             querySnapshot.forEach((docSnap) => {
                 const data = docSnap.data();
-                
-                // Construct table row
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
                     <td><strong>${data.version}</strong><br><small class="text-muted">${data.androidBase}</small></td>
-                    <td>${data.codename}</td>
+                    <td><span style="font-family: monospace; color: var(--accent-orange);">${data.codename}</span></td>
                     <td><span class="badge ${data.channel === 'Stable' ? 'badge-secure' : 'badge-beta'}">${data.channel}</span></td>
-                    <td>Published</td>
+                    <td><span style="color: #00ff64; font-size: 0.85rem;">Live</span></td>
                 `;
                 tableBody.appendChild(tr);
             });
         } catch (error) {
             console.error("Error loading releases:", error);
-            tableBody.innerHTML = `<tr><td colspan="4" class="text-center" style="color: red;">Failed to load data.</td></tr>`;
+            tableBody.innerHTML = `<tr><td colspan="4" class="text-center" style="color: red;">Failed to fetch database.</td></tr>`;
         }
     }
 }
 
-// Global Modal Functions (can be triggered by HTML onclick attributes)
+// Global Modal Handlers accessible by HTML onclick attributes
 window.openModal = function(modalId) {
-    console.log(`Opening modal: ${modalId}`);
-    // Modal logic will go here
+    document.getElementById(modalId)?.classList.add('active');
 };
 
 window.closeModal = function(modalId) {
-    console.log(`Closing modal: ${modalId}`);
+    document.getElementById(modalId)?.classList.remove('active');
 };
 
-// Initialize Application once DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
     new AdminController();
 });
