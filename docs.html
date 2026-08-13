@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ShivOS | Official Documentation</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        /* Docs Layout */
+        .docs-container {
+            display: flex;
+            max-width: 1600px;
+            margin: 0 auto;
+            padding-top: 76px; /* Offset for navbar */
+            min-height: 100vh;
+            align-items: flex-start;
+        }
+
+        /* Sidebar Navigation */
+        .docs-sidebar {
+            width: 280px;
+            position: sticky;
+            top: 76px;
+            height: calc(100vh - 76px);
+            overflow-y: auto;
+            padding: 2.5rem 2rem;
+            border-right: 1px solid var(--glass-border);
+            background: var(--bg-dark);
+        }
+
+        .docs-nav-group {
+            margin-bottom: 2rem;
+        }
+
+        .docs-nav-group h4 {
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 1rem;
+        }
+
+        .docs-nav-link {
+            display: block;
+            padding: 0.6rem 1rem;
+            color: var(--text-main);
+            text-decoration: none;
+            border-radius: 6px;
+            margin-bottom: 0.25rem;
+            font-size: 0.95rem;
+            transition: var(--transition);
+            border-left: 2px solid transparent;
+        }
+
+        .docs-nav-link:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .docs-nav-link.active {
+            background: rgba(255, 107, 0, 0.1);
+            color: var(--accent-orange);
+            border-left-color: var(--accent-orange);
+            font-weight: 600;
+        }
+
+        /* Main Content */
+        .docs-content {
+            flex: 1;
+            padding: 3rem 5% 6rem;
+            max-width: 960px;
+        }
+
+        .doc-section {
+            display: none;
+            animation: fadeIn 0.4s ease forwards;
+        }
+
+        .doc-section.active {
+            display: block;
+        }
+
+        .doc-section h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(to right, #fff, var(--accent-orange));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .doc-section h2 {
+            font-size: 1.5rem;
+            margin: 2.5rem 0 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .doc-section p {
+            color: var(--text-muted);
+            margin-bottom: 1.25rem;
+            font-size: 1.05rem;
+        }
+
+        /* Callout Alerts */
+        .alert {
+            padding: 1.25rem 1.5rem;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+            border-left: 4px solid;
+            background: var(--glass-bg);
+            backdrop-filter: var(--glass-blur);
+        }
+
+        .alert-danger {
+            border-left-color: #ff3c3c;
+            background: rgba(255, 60, 60, 0.1);
+        }
+
+        .alert-warning {
+            border-left-color: #ffaa00;
+            background: rgba(255, 170, 0, 0.1);
+        }
+
+        .alert-info {
+            border-left-color: #4285F4;
+            background: rgba(66, 133, 244, 0.1);
+        }
+
+        .alert strong {
+            display: block;
+            margin-bottom: 0.25rem;
+            color: var(--text-main);
+        }
+
+        /* Code Blocks */
+        .code-container {
+            position: relative;
+            margin: 1.5rem 0;
+            border-radius: 8px;
+            background: #050505;
+            border: 1px solid var(--glass-border);
+            overflow: hidden;
+        }
+
+        .code-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 1rem;
+            background: rgba(255,255,255,0.05);
+            border-bottom: 1px solid var(--glass-border);
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .code-block {
+            padding: 1.25rem 1rem;
+            overflow-x: auto;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            color: #00ff64;
+            white-space: pre;
+        }
+
+        .btn-copy {
+            background: transparent;
+            border: 1px solid var(--glass-border);
+            color: var(--text-muted);
+            padding: 0.25rem 0.75rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.75rem;
+            transition: var(--transition);
+        }
+
+        .btn-copy:hover {
+            color: var(--text-main);
+            border-color: var(--text-main);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Mobile Adjustments */
+        @media (max-width: 900px) {
+            .docs-container {
+                flex-direction: column;
+            }
+            .docs-sidebar {
+                width: 100%;
+                height: auto;
+                position: static;
+                padding: 1.5rem 5%;
+                border-right: none;
+                border-bottom: 1px solid var(--glass-border);
+                display: flex;
+                overflow-x: auto;
+                white-space: nowrap;
+                gap: 1.5rem;
+            }
+            .docs-nav-group {
+                margin-bottom: 0;
+                display: flex;
+                gap: 0.5rem;
+                align-items: center;
+            }
+            .docs-nav-group h4 {
+                display: none;
+            }
+            .docs-nav-link {
+                margin-bottom: 0;
+                display: inline-block;
+                padding: 0.5rem 1rem;
+                border-left: none;
+                border-bottom: 2px solid transparent;
+            }
+            .docs-nav-link.active {
+                border-left: none;
+                border-bottom-color: var(--accent-orange);
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div class="brand">Shiv<span>OS</span></div>
+        <div class="nav-links">
+            <a href="/index.html">Home</a>
+            <a href="/downloads.html">Downloads</a>
+            <a href="/docs.html" style="color: var(--text-main);">Documentation</a>
+            <a href="/blog.html">Blog</a>
+        </div>
+        <div class="auth-buttons">
+            <a href="/login.html" class="btn btn-secondary" style="padding: 0.5rem 1.5rem;">User Portal</a>
+        </div>
+    </nav>
+
+    <div class="docs-container">
+        <!-- Interactive Sidebar -->
+        <aside class="docs-sidebar">
+            <div class="docs-nav-group">
+                <h4>Getting Started</h4>
+                <a href="#adb-fastboot" class="docs-nav-link active" data-target="adb-fastboot">ADB & Fastboot</a>
+                <a href="#bootloader" class="docs-nav-link" data-target="bootloader">Unlock Bootloader</a>
+            </div>
+            <div class="docs-nav-group">
+                <h4>Flashing Guides</h4>
+                <a href="#recovery" class="docs-nav-link" data-target="recovery">Install Custom Recovery</a>
+                <a href="#installation" class="docs-nav-link" data-target="installation">Install ShivOS</a>
+            </div>
+            <div class="docs-nav-group">
+                <h4>Support</h4>
+                <a href="#troubleshooting" class="docs-nav-link" data-target="troubleshooting">Troubleshooting</a>
+                <a href="#faq" class="docs-nav-link" data-target="faq">FAQ</a>
+            </div>
+        </aside>
+
+        <!-- Documentation Content -->
+        <main class="docs-content">
+            
+            <!-- SECTION: ADB & Fastboot -->
+            <section id="adb-fastboot" class="doc-section active">
+                <h1>ADB & Fastboot Setup</h1>
+                <p>Android Debug Bridge (ADB) and Fastboot are essential command-line tools required for modifying your device's software.</p>
+                
+                <div class="alert alert-info">
+                    <strong>Developer Options Required</strong>
+                    Before proceeding, ensure you have enabled "USB Debugging" and "OEM Unlocking" in your device's Developer Options settings.
+                </div>
+
+                <h2>Windows Installation</h2>
+                <p>1. Download the official Google Platform Tools.<br>2. Extract the ZIP file to <code>C:\platform-tools</code>.<br>3. Open Command Prompt and test the connection:</p>
+                
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>Terminal</span>
+                        <button class="btn-copy" onclick="copyCode(this)">Copy</button>
+                    </div>
+                    <div class="code-block">cd C:\platform-tools
+adb devices</div>
+                </div>
+
+                <h2>Linux / macOS Installation</h2>
+                <p>Most Linux distributions and macOS setups can install platform-tools directly via their package managers.</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>Bash (Ubuntu/Debian)</span>
+                        <button class="btn-copy" onclick="copyCode(this)">Copy</button>
+                    </div>
+                    <div class="code-block">sudo apt update
+sudo apt install android-tools-adb android-tools-fastboot</div>
+                </div>
+            </section>
+
+            <!-- SECTION: Unlock Bootloader -->
+            <section id="bootloader" class="doc-section">
+                <h1>Unlocking the Bootloader</h1>
+                <p>The bootloader ensures only official software runs on your device. You must unlock it to flash a custom recovery and ShivOS.</p>
+                
+                <div class="alert alert-danger">
+                    <strong>Data Wipe Warning</strong>
+                    Unlocking the bootloader will trigger a factory reset. All personal data, photos, and apps on internal storage will be completely erased. Back up your data first.
+                </div>
+
+                <h2>Standard Fastboot Method (Pixel, OnePlus, Nothing)</h2>
+                <p>1. Reboot your device into Fastboot mode (usually Volume Down + Power).<br>2. Connect your device to the PC.<br>3. Execute the unlock command:</p>
+
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>Terminal</span>
+                        <button class="btn-copy" onclick="copyCode(this)">Copy</button>
+                    </div>
+                    <div class="code-block">fastboot flashing unlock</div>
+                </div>
+                <p>4. Use the volume keys on your device to confirm the unlock request, and press the Power button to execute.</p>
+            </section>
+
+            <!-- SECTION: Custom Recovery -->
+            <section id="recovery" class="doc-section">
+                <h1>Install Custom Recovery</h1>
+                <p>ShivOS requires a custom recovery like TWRP, OrangeFox, or the official ShivOS Recovery to wipe partitions and flash the OS ZIP file.</p>
+
+                <h2>Flashing Recovery Image</h2>
+                <p>Download the device-specific recovery image (.img) for your phone model, place it in your platform-tools folder, and execute:</p>
+
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>Terminal</span>
+                        <button class="btn-copy" onclick="copyCode(this)">Copy</button>
+                    </div>
+                    <div class="code-block">fastboot flash recovery recovery.img
+fastboot reboot recovery</div>
+                </div>
+
+                <div class="alert alert-warning">
+                    <strong>A/B Partition Devices</strong>
+                    If your device utilizes A/B slots (most devices launched with Android 9+), use <code>fastboot boot recovery.img</code> instead, and flash the installer ZIP from within the temporary recovery.
+                </div>
+            </section>
+
+            <!-- SECTION: Install ShivOS -->
+            <section id="installation" class="doc-section">
+                <h1>Flashing ShivOS</h1>
+                <p>You are now ready to install ShivOS. Ensure your battery is at least 50% before proceeding.</p>
+
+                <h2>Step-by-Step Installation</h2>
+                <p>1. Boot your device into your Custom Recovery.<br>2. Go to <strong>Wipe</strong> > <strong>Format Data</strong> and type <code>yes</code>.<br>3. Return to the main menu and select <strong>Apply Update</strong> > <strong>Apply from ADB</strong>.<br>4. Sideload the ShivOS ROM package from your PC:</p>
+
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>Terminal</span>
+                        <button class="btn-copy" onclick="copyCode(this)">Copy</button>
+                    </div>
+                    <div class="code-block">adb sideload ShivOS-v2.x-OFFICIAL.zip</div>
+                </div>
+
+                <p>5. Wait for the process to hit 47% (this is normal ADB behavior) and state `Total xfer: 1.00x`.<br>6. Reboot your system and enjoy ShivOS!</p>
+            </section>
+
+        </main>
+    </div>
+
+    <script type="module" src="docs.js"></script>
+</body>
+</html>
