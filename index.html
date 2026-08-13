@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ShivOS | Performance. Stability. Simplicity.</title>
+    <meta name="description" content="ShivOS by SRT. A premium, high-performance custom Android operating system focused on stability and privacy.">
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800;900&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <nav>
+        <div class="brand">Shiv<span>OS</span></div>
+        <div class="nav-links">
+            <a href="#features">Features</a>
+            <a href="/downloads.html">Downloads</a>
+            <a href="/changelog.html">Changelog</a>
+            <a href="/docs.html">Documentation</a>
+            <a href="/blog.html">Blog</a>
+        </div>
+        <div class="auth-buttons">
+            <a href="/login.html" class="btn btn-secondary" style="padding: 0.5rem 1.5rem;">User Portal</a>
+        </div>
+    </nav>
+
+    <main>
+        <section class="hero" id="home">
+            <h1>Beyond limits.</h1>
+            <p>Performance. Stability. Simplicity. ShivOS redefines your Android experience with heavy optimizations, a pristine UI, and zero compromise on privacy. Founded by SRT.</p>
+            <div class="btn-group">
+                <a href="/downloads.html" class="btn btn-primary">Get ShivOS</a>
+                <a href="/devices.html" class="btn btn-secondary">Supported Devices</a>
+                <a href="/docs.html" class="btn btn-secondary">Documentation</a>
+            </div>
+        </section>
+
+        <!-- Firebase-Powered Live Statistics -->
+        <section class="stats" id="stats">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value" id="stat-downloads">--</div>
+                    <div class="stat-label">Total Downloads</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="stat-devices">--</div>
+                    <div class="stat-label">Supported Devices</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="stat-users">--</div>
+                    <div class="stat-label">Active Users</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="stat-releases">--</div>
+                    <div class="stat-label">Stable Releases</div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Firebase App (the core Firebase SDK) is always required and must be listed first -->
+    <script type="module" src="app.js"></script>
+</body>
+</html>
