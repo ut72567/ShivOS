@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ShivOS | User Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&display=swap" rel="stylesheet">
+    <style>
+        .dashboard-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 8rem 5% 4rem;
+        }
+
+        .profile-card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1.5rem;
+            backdrop-filter: var(--glass-blur);
+            margin-bottom: 2.5rem;
+            flex-wrap: wrap;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1.25rem;
+        }
+
+        .user-avatar {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            background: var(--accent-orange);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.75rem;
+            font-weight: 800;
+            border: 2px solid var(--glass-border);
+        }
+
+        .user-details h2 {
+            font-size: 1.5rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .dash-card {
+            background: var(--bg-surface);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 1.5rem;
+        }
+
+        .dash-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.25rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .dash-card-header h3 {
+            font-size: 1.1rem;
+        }
+
+        .bug-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .bug-item {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid var(--glass-border);
+            padding: 1rem;
+            border-radius: 8px;
+        }
+
+        .bug-title {
+            font-weight: 600;
+            font-size: 0.95rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .bug-meta {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 0.5rem;
+        }
+
+        .status-badge {
+            padding: 0.2rem 0.6rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-open { background: rgba(255, 170, 0, 0.15); color: #ffaa00; border: 1px solid #ffaa00; }
+        .status-resolved { background: rgba(0, 255, 100, 0.15); color: #00ff64; border: 1px solid #00ff64; }
+        .status-closed { background: rgba(160, 160, 160, 0.15); color: #a0a0a0; border: 1px solid #a0a0a0; }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(8px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            opacity: 0;
+            pointer-events: none;
+            transition: var(--transition);
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-card {
+            background: var(--bg-surface);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 2rem;
+            width: 100%;
+            max-width: 520px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div class="brand">Shiv<span>OS</span></div>
+        <div class="nav-links">
+            <a href="/index.html">Home</a>
+            <a href="/downloads.html">Downloads</a>
+            <a href="/docs.html">Documentation</a>
+        </div>
+        <div class="auth-buttons">
+            <button id="btn-user-logout" class="btn btn-secondary" style="padding: 0.5rem 1.25rem;">Sign Out</button>
+        </div>
+    </nav>
+
+    <main class="dashboard-container">
+        <!-- Profile Header -->
+        <div class="profile-card">
+            <div class="user-info">
+                <div class="user-avatar" id="user-avatar-text">U</div>
+                <div class="user-details">
+                    <h2 id="user-display-name">Loading Profile...</h2>
+                    <p id="user-email" class="text-muted" style="font-size: 0.9rem;">user@shivos.org</p>
+                </div>
+            </div>
+            <button class="btn btn-primary" onclick="openBugModal()">Report a Bug</button>
+        </div>
+
+        <div class="dashboard-grid">
+            <!-- Saved Devices Section -->
+            <div class="dash-card">
+                <div class="dash-card-header">
+                    <h3>Saved Devices</h3>
+                    <a href="/downloads.html" style="color: var(--accent-orange); font-size: 0.85rem; text-decoration: none;">Browse All</a>
+                </div>
+                <div id="saved-devices-container" class="bug-list">
+                    <p class="text-muted" style="font-size: 0.9rem;">No saved devices yet.</p>
+                </div>
+            </div>
+
+            <!-- Bug Reports Tracker -->
+            <div class="dash-card">
+                <div class="dash-card-header">
+                    <h3>My Bug Reports</h3>
+                    <span id="bug-count-badge" class="badge badge-secure" style="font-size: 0.75rem;">0 Total</span>
+                </div>
+                <div id="user-bugs-container" class="bug-list">
+                    <p class="text-muted" style="font-size: 0.9rem;">Fetching bug reports...</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Bug Report Submission Modal -->
+    <div class="modal-overlay" id="bugModal">
+        <div class="modal-card">
+            <h3 style="margin-bottom: 1.5rem;">Submit Bug Report</h3>
+            <form id="bug-form">
+                <div class="form-group">
+                    <label for="bug-device">Device Codename</label>
+                    <input type="text" id="bug-device" class="form-input" placeholder="e.g., alioth, sweet, vayu" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="bug-version">ShivOS Build Version</label>
+                    <input type="text" id="bug-version" class="form-input" placeholder="e.g., ShivOS v2.1-Stable" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="bug-description">Bug Description & Steps to Reproduce</label>
+                    <textarea id="bug-description" class="form-input" rows="4" placeholder="Describe what happens and steps to trigger the bug..." required style="resize: vertical;"></textarea>
+                </div>
+
+                <div style="display: flex; gap: 1rem; justify-content: flex-end; margin-top: 1.5rem;">
+                    <button type="button" class="btn btn-secondary" onclick="closeBugModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Submit Report</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script type="module" src="dashboard.js"></script>
+</body>
+</html>
