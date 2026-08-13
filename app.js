@@ -3,7 +3,6 @@ import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/
 import { getFirestore, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics.js";
 
-// ShivOS Production Firebase Configuration
 const firebaseConfig = {
   apiKey: "AIzaSyDzYZjKIFqvymAunjNaSg_H3ugi0FqxG4E",
   authDomain: "shivos.firebaseapp.com",
@@ -14,7 +13,6 @@ const firebaseConfig = {
   measurementId: "G-TTF55F03W2"
 };
 
-// Initialize Firebase Ecosystem
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
@@ -32,9 +30,11 @@ class ShivOSCore {
             if (!authBtnContainer) return;
             
             if (user) {
-                authBtnContainer.innerHTML = `<a href="/dashboard.html" class="btn btn-secondary" style="padding: 0.5rem 1.5rem;">Dashboard</a>`;
+                // FIXED RELATIVE PATH HERE
+                authBtnContainer.innerHTML = `<a href="./dashboard.html" class="btn btn-secondary" style="padding: 0.5rem 1.5rem;">Dashboard</a>`;
             } else {
-                authBtnContainer.innerHTML = `<a href="/login.html" class="btn btn-secondary" style="padding: 0.5rem 1.5rem;">User Portal</a>`;
+                // FIXED RELATIVE PATH HERE
+                authBtnContainer.innerHTML = `<a href="./login.html" class="btn btn-secondary" style="padding: 0.5rem 1.5rem;">User Portal</a>`;
             }
         });
     }
