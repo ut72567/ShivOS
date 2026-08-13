@@ -24,7 +24,7 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-let currentMode = 'login'; // 'login' | 'signup'
+let currentMode = 'login'; 
 
 class AuthManager {
     constructor() {
@@ -35,8 +35,8 @@ class AuthManager {
     initAuthCheck() {
         onAuthStateChanged(auth, (user) => {
             if (user) {
-                // User is already signed in -> Redirect to Dashboard
-                window.location.replace('/dashboard.html');
+                // FIXED RELATIVE PATH HERE
+                window.location.replace('./dashboard.html');
             }
         });
     }
@@ -46,9 +46,9 @@ class AuthManager {
         const googleBtn = document.getElementById('btn-google');
         const githubBtn = document.getElementById('btn-github');
 
-        form.addEventListener('submit', (e) => this.handleEmailAuth(e));
-        googleBtn.addEventListener('click', () => this.handleOAuth(new GoogleAuthProvider()));
-        githubBtn.addEventListener('click', () => this.handleOAuth(new GithubAuthProvider()));
+        form?.addEventListener('submit', (e) => this.handleEmailAuth(e));
+        googleBtn?.addEventListener('click', () => this.handleOAuth(new GoogleAuthProvider()));
+        githubBtn?.addEventListener('click', () => this.handleOAuth(new GithubAuthProvider()));
     }
 
     async handleEmailAuth(e) {
@@ -57,7 +57,7 @@ class AuthManager {
 
         const email = document.getElementById('input-email').value.trim();
         const password = document.getElementById('input-password').value;
-        const name = document.getElementById('input-name').value.trim();
+        const name = document.getElementById('input-name')?.value.trim();
 
         try {
             if (currentMode === 'signup') {
@@ -66,6 +66,7 @@ class AuthManager {
             } else {
                 await signInWithEmailAndPassword(auth, email, password);
             }
+            // FIXED RELATIVE PATH HERE
             window.location.replace('./dashboard.html');
         } catch (error) {
             this.showError(this.formatErrorMessage(error.code));
@@ -77,7 +78,8 @@ class AuthManager {
         try {
             const result = await signInWithPopup(auth, provider);
             await this.createUserProfile(result.user, result.user.displayName || 'ShivOS User');
-            window.location.replace('/.dashboard.html');
+            // FIXED RELATIVE PATH HERE
+            window.location.replace('./dashboard.html');
         } catch (error) {
             this.showError(this.formatErrorMessage(error.code));
         }
@@ -101,14 +103,18 @@ class AuthManager {
 
     showError(message) {
         const errBox = document.getElementById('auth-error');
-        errBox.innerText = message;
-        errBox.style.display = 'block';
+        if(errBox) {
+            errBox.innerText = message;
+            errBox.style.display = 'block';
+        }
     }
 
     clearError() {
         const errBox = document.getElementById('auth-error');
-        errBox.innerText = '';
-        errBox.style.display = 'none';
+        if(errBox) {
+            errBox.innerText = '';
+            errBox.style.display = 'none';
+        }
     }
 
     formatErrorMessage(code) {
@@ -127,7 +133,6 @@ class AuthManager {
     }
 }
 
-// Global Tab Switcher
 window.switchAuthMode = function(mode) {
     currentMode = mode;
     const tabLogin = document.getElementById('tab-login');
