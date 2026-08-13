@@ -66,7 +66,7 @@ class AuthManager {
             } else {
                 await signInWithEmailAndPassword(auth, email, password);
             }
-            window.location.replace('/dashboard.html');
+            window.location.replace('./dashboard.html');
         } catch (error) {
             this.showError(this.formatErrorMessage(error.code));
         }
