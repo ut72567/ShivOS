@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ShivOS Admin | Command Center</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="admin.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&display=swap" rel="stylesheet">
+</head>
+<body class="admin-body">
+
+    <!-- Mobile Header -->
+    <header class="admin-mobile-header">
+        <div class="brand">Shiv<span>OS</span> Admin</div>
+        <button id="menu-toggle" class="icon-btn">☰</button>
+    </header>
+
+    <div class="admin-layout">
+        <!-- Collapsible Sidebar -->
+        <aside class="admin-sidebar" id="sidebar">
+            <div class="sidebar-header desktop-only">
+                <div class="brand">Shiv<span>OS</span></div>
+            </div>
+            <nav class="admin-nav">
+                <a href="#dashboard" class="active">Overview</a>
+                <a href="#devices">Device Trees</a>
+                <a href="#releases">OTA Releases</a>
+                <a href="#bugs">Bug Reports</a>
+                <a href="#users">Access Control</a>
+            </nav>
+            <div class="sidebar-footer">
+                <button id="btn-logout" class="btn btn-secondary" style="width: 100%;">Sign Out</button>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="admin-content">
+            <header class="content-header">
+                <h2>Overview Dashboard</h2>
+                <span class="badge badge-secure">Encrypted Connection</span>
+            </header>
+
+            <!-- Quick Actions Grid -->
+            <div class="quick-actions">
+                <button class="action-card" onclick="openModal('releaseModal')">
+                    <span class="icon" style="font-size: 1.5rem; color: var(--accent-orange);">+</span>
+                    <span style="font-weight: 600;">Push New Release</span>
+                </button>
+                <button class="action-card" onclick="openModal('deviceModal')">
+                    <span class="icon" style="font-size: 1.5rem; color: var(--accent-orange);">+</span>
+                    <span style="font-weight: 600;">Add Device</span>
+                </button>
+            </div>
+
+            <!-- Recent Activity Table -->
+            <div class="data-section">
+                <h3>Latest Uploads</h3>
+                <div class="table-responsive">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Version</th>
+                                <th>Codename</th>
+                                <th>Channel</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="recent-releases-body">
+                            <tr>
+                                <td colspan="4" class="text-center text-muted">Loading secure data...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal: Add Device Tree -->
+    <div class="modal-overlay" id="deviceModal">
+        <div class="modal-card">
+            <h3 style="margin-bottom: 1.5rem;">Add Supported Device</h3>
+            <form id="form-add-device">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Device Name (e.g., POCO F3)</label>
+                        <input type="text" id="dev-name" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Codename (e.g., alioth)</label>
+                        <input type="text" id="dev-codename" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Maintainer</label>
+                        <input type="text" id="dev-maintainer" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Status</label>
+                        <select id="dev-status" class="form-input">
+                            <option value="Active">Active</option>
+                            <option value="Dropped">Dropped</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('deviceModal')">Cancel</button>
+                    <button type="submit" class="btn btn-primary" id="btn-submit-device">Save Device</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal: Push New Release -->
+    <div class="modal-overlay" id="releaseModal">
+        <div class="modal-card" style="max-width: 700px;">
+            <h3 style="margin-bottom: 1.5rem;">Push OTA Release</h3>
+            <form id="form-add-release">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Target Codename (e.g., alioth)</label>
+                        <input type="text" id="rel-codename" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Version (e.g., v2.5)</label>
+                        <input type="text" id="rel-version" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Android Base (e.g., 14.0)</label>
+                        <input type="text" id="rel-base" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Channel</label>
+                        <select id="rel-channel" class="form-input">
+                            <option value="Stable">Stable</option>
+                            <option value="Beta">Beta</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="grid-column: 1 / -1;">
+                        <label>Download URL (Direct / SourceForge)</label>
+                        <input type="url" id="rel-url" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label>File Size (MB)</label>
+                        <input type="number" id="rel-size" class="form-input" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label>SHA-256 Checksum</label>
+                        <input type="text" id="rel-sha" class="form-input" required>
+                    </div>
+                    <div class="form-group" style="grid-column: 1 / -1;">
+                        <label>Release Notes / Changelog</label>
+                        <textarea id="rel-notes" class="form-input" rows="4" style="resize: vertical;"></textarea>
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('releaseModal')">Cancel</button>
+                    <button type="submit" class="btn btn-primary" id="btn-submit-release">Publish Release</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script type="module" src="admin.js"></script>
+</body>
+</html>
