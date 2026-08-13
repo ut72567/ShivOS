@@ -1,16 +1,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 import { 
-    getFirestore, 
-    doc, 
-    getDoc, 
-    collection, 
-    addDoc, 
-    query, 
-    where, 
-    orderBy, 
-    onSnapshot, 
-    serverTimestamp 
+    getFirestore, doc, getDoc, collection, addDoc, query, where, orderBy, onSnapshot, serverTimestamp 
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -36,7 +27,8 @@ class DashboardController {
     init() {
         onAuthStateChanged(auth, async (user) => {
             if (!user) {
-                window.location.replace('/login.html');
+                // FIXED RELATIVE PATH HERE
+                window.location.replace('./login.html');
                 return;
             }
 
@@ -52,9 +44,8 @@ class DashboardController {
         const emailEl = document.getElementById('user-email');
         const avatarEl = document.getElementById('user-avatar-text');
 
-        emailEl.innerText = user.email;
+        if(emailEl) emailEl.innerText = user.email;
 
-        // Fetch display name from Firestore profile document
         const userRef = doc(db, 'users', user.uid);
         const userSnap = await getDoc(userRef);
 
@@ -64,14 +55,16 @@ class DashboardController {
         }
 
         displayName = displayName || 'ShivOS User';
-        nameEl.innerText = displayName;
-        avatarEl.innerText = displayName.charAt(0).toUpperCase();
+        if(nameEl) nameEl.innerText = displayName;
+        if(avatarEl) avatarEl.innerText = displayName.charAt(0).toUpperCase();
     }
 
     listenToBugReports(uid) {
         const bugContainer = document.getElementById('user-bugs-container');
         const bugBadge = document.getElementById('bug-count-badge');
         
+        if(!bugContainer || !bugBadge) return;
+
         const q = query(
             collection(db, 'bug_reports'),
             where('uid', '==', uid),
@@ -115,7 +108,8 @@ class DashboardController {
         const logoutBtn = document.getElementById('btn-user-logout');
         if (logoutBtn) {
             logoutBtn.addEventListener('click', () => {
-                signOut(auth).then(() => window.location.replace('/login.html'));
+                // FIXED RELATIVE PATH HERE
+                signOut(auth).then(() => window.location.replace('./login.html'));
             });
         }
 
@@ -145,7 +139,7 @@ class DashboardController {
             });
 
             window.closeBugModal();
-            bugForm.reset();
+            document.getElementById('bug-form').reset();
         } catch (error) {
             console.error("Error submitting bug report:", error);
             alert("Failed to submit bug report. Please try again.");
@@ -153,13 +147,12 @@ class DashboardController {
     }
 }
 
-// Global Modal Functions
 window.openBugModal = function() {
-    document.getElementById('bugModal').classList.add('active');
+    document.getElementById('bugModal')?.classList.add('active');
 };
 
 window.closeBugModal = function() {
-    document.getElementById('bugModal').classList.remove('active');
+    document.getElementById('bugModal')?.classList.remove('active');
 };
 
 document.addEventListener('DOMContentLoaded', () => {
