@@ -77,7 +77,7 @@ class AuthManager {
         try {
             const result = await signInWithPopup(auth, provider);
             await this.createUserProfile(result.user, result.user.displayName || 'ShivOS User');
-            window.location.replace('/dashboard.html');
+            window.location.replace('/.dashboard.html');
         } catch (error) {
             this.showError(this.formatErrorMessage(error.code));
         }
