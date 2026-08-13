@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Download ShivOS | Supported Devices</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&display=swap" rel="stylesheet">
+    <style>
+        .downloads-header {
+            padding: 8rem 5% 4rem;
+            text-align: center;
+            background: radial-gradient(circle at 50% 0%, rgba(255, 107, 0, 0.1) 0%, transparent 60%);
+        }
+        
+        .downloads-header h1 {
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            margin-bottom: 1rem;
+        }
+
+        .filter-bar {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            padding: 1.5rem;
+            border-radius: 12px;
+            display: flex;
+            gap: 1rem;
+            max-width: 800px;
+            margin: 0 auto 3rem;
+            backdrop-filter: var(--glass-blur);
+            flex-wrap: wrap;
+        }
+
+        .filter-input {
+            flex: 1;
+            min-width: 200px;
+            background: rgba(0,0,0,0.5);
+            border: 1px solid var(--glass-border);
+            color: var(--text-main);
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            outline: none;
+        }
+
+        .filter-input:focus {
+            border-color: var(--accent-orange);
+        }
+
+        .downloads-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+            padding: 0 5% 5rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .device-card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 1.5rem;
+            transition: var(--transition);
+        }
+
+        .device-card:hover {
+            border-color: var(--accent-orange);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(255, 107, 0, 0.1);
+        }
+
+        .device-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .device-name {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .device-codename {
+            color: var(--accent-orange);
+            font-family: monospace;
+            font-size: 0.9rem;
+        }
+
+        .release-info {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: 1.5rem;
+        }
+
+        .release-info p {
+            margin-bottom: 0.5rem;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .release-info span {
+            color: var(--text-main);
+        }
+
+        .download-btn {
+            display: block;
+            text-align: center;
+            width: 100%;
+        }
+
+        .checksum-box {
+            background: rgba(0,0,0,0.5);
+            padding: 0.5rem;
+            border-radius: 6px;
+            font-family: monospace;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 1rem;
+            word-break: break-all;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div class="brand">Shiv<span>OS</span></div>
+        <div class="nav-links">
+            <a href="/index.html">Home</a>
+            <a href="/downloads.html" style="color: var(--text-main);">Downloads</a>
+            <a href="/changelog.html">Changelog</a>
+            <a href="/docs.html">Documentation</a>
+        </div>
+    </nav>
+
+    <header class="downloads-header">
+        <h1>Get ShivOS</h1>
+        <p class="text-muted">Select your device below to download the latest builds.</p>
+    </header>
+
+    <main>
+        <!-- Search and Filter -->
+        <div class="filter-bar">
+            <input type="text" id="search-device" class="filter-input" placeholder="Search device or codename (e.g., alioth)...">
+            <select id="filter-channel" class="filter-input" style="flex: 0.5;">
+                <option value="All">All Channels</option>
+                <option value="Stable">Stable Only</option>
+                <option value="Beta">Beta Only</option>
+            </select>
+        </div>
+
+        <!-- Downloads Grid Populated by Firebase -->
+        <div class="downloads-grid" id="devices-container">
+            <!-- Loading State -->
+            <div style="grid-column: 1 / -1; text-align: center; color: var(--text-muted);">
+                Fetching device trees securely...
+            </div>
+        </div>
+    </main>
+
+    <script type="module" src="downloads.js"></script>
+</body>
+</html>
