@@ -26,7 +26,8 @@ class AdminController {
     protectRoute() {
         onAuthStateChanged(auth, async (user) => {
             if (!user) {
-                window.location.replace('/login.html');
+                // FIXED RELATIVE PATH HERE
+                window.location.replace('./login.html');
                 return;
             }
             try {
@@ -37,10 +38,12 @@ class AdminController {
                     this.loadRecentReleases();
                 } else {
                     alert("Access Denied: Insufficient permissions.");
-                    window.location.replace('/dashboard.html');
+                    // FIXED RELATIVE PATH HERE
+                    window.location.replace('./dashboard.html');
                 }
             } catch (error) {
-                window.location.replace('/login.html');
+                // FIXED RELATIVE PATH HERE
+                window.location.replace('./login.html');
             }
         });
     }
@@ -51,10 +54,10 @@ class AdminController {
         });
 
         document.getElementById('btn-logout')?.addEventListener('click', () => {
-            signOut(auth).then(() => window.location.replace('/login.html'));
+            // FIXED RELATIVE PATH HERE
+            signOut(auth).then(() => window.location.replace('./login.html'));
         });
 
-        // Form Submit Listeners
         document.getElementById('form-add-device')?.addEventListener('submit', (e) => this.handleDeviceSubmit(e));
         document.getElementById('form-add-release')?.addEventListener('submit', (e) => this.handleReleaseSubmit(e));
     }
@@ -79,7 +82,7 @@ class AdminController {
             window.closeModal('deviceModal');
         } catch (error) {
             console.error("Error adding device:", error);
-            alert("Failed to add device. Check console for details.");
+            alert("Failed to add device.");
         } finally {
             btn.innerText = 'Save Device';
             btn.disabled = false;
@@ -110,11 +113,10 @@ class AdminController {
             document.getElementById('form-add-release').reset();
             window.closeModal('releaseModal');
             
-            // Refresh Dashboard table to show new release
             this.loadRecentReleases();
         } catch (error) {
             console.error("Error pushing release:", error);
-            alert("Failed to push release. Check console for details.");
+            alert("Failed to push release.");
         } finally {
             btn.innerText = 'Publish Release';
             btn.disabled = false;
@@ -154,7 +156,6 @@ class AdminController {
     }
 }
 
-// Global Modal Handlers accessible by HTML onclick attributes
 window.openModal = function(modalId) {
     document.getElementById(modalId)?.classList.add('active');
 };
